@@ -9,7 +9,7 @@ $connexion = new PDO ('mysql:host=localhost; dbname=academy; charset =utf8', 'ro
 $connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 //echo var_dump($connexion);
 $profile = $connexion->query('SELECT*FROM `profile`');
-$profile = $profile->fetchAll();
+$row = $profile->fetchAll();
 $education = $connexion->query('SELECT*FROM `education` ORDER BY yearEnd DESC');
 $experience = $connexion->query('SELECT*FROM `experience` ORDER BY yearEnd DESC');
 $languages = $connexion->query('SELECT*FROM `languages`');
