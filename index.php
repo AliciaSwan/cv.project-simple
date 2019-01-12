@@ -57,10 +57,10 @@ $projects=$connexion->query('SELECT*FROM `projects`');
 
         <div class="contact-container container-block">
             <ul class="list-unstyled contact-list">
-                <li class="email"><i class="fa fa-envelope"></i><a href="mailto: <?=$profile['0']['email'];?>"><?=$profile['0']['email'];?></a></li>
-                <li class="phone"><i class="fa fa-phone"></i><a href="tel:<?=$profile['0']['phone'];?>"><?=$profile['0']['phone'];?></a></li>
-                <li class="website"><i class="fa fa-globe"></i><a href="#" target="_blank"><?=$profile['0']['site'];?></a></li>
-                <li class="vk"><i class="fa fa-vk"></i><a href="https://vk.com/id614451" target="_blank"><?=$profile['0']['social'];?></a></li>
+                <li class="email"><i class="fa fa-envelope"></i><a href="mailto: <?=$row['0']['email'];?>"><?=$row['0']['email'];?></a></li>
+                <li class="phone"><i class="fa fa-phone"></i><a href="tel:<?=$row['0']['phone'];?>"><?=$row['0']['phone'];?></a></li>
+                <li class="website"><i class="fa fa-globe"></i><a href="#" target="_blank"><?=$row['0']['site'];?></a></li>
+                <li class="vk"><i class="fa fa-vk"></i><a href="https://vk.com/id614451" target="_blank"><?=$row['0']['social'];?></a></li>
             </ul>
         </div><!--//contact-container-->
         <div class="education-container container-block">
@@ -97,9 +97,9 @@ $projects=$connexion->query('SELECT*FROM `projects`');
     <div class="main-wrapper">
 
         <section class="section name-section">
-            <h1 class="name"><?=$profile[0]['name'];?></h1>
+            <h1 class="name"><?=$row[0]['name'];?></h1>
             <hr/>
-            <h3><?=$profile[0]['post'];?></h3>
+            <h3><?=$row[0]['post'];?></h3>
             <div class="summary">
 
             </div><!--//summary-->
@@ -179,16 +179,18 @@ $projects=$connexion->query('SELECT*FROM `projects`');
                 <br/>
 
                 <?php if(isset($_POST['name'])&& isset($_POST['comment'])) {
-                    $comment = $_POST['comment'];
-                    $name = $_POST['name'];
-                    if(strpos($_POST['comment'] || $_POST['name'],'редиска')===false){
-                        echo "<span style='color:red;'>* редиска не может быть записана в базу данных</span>";
+                    $comment = htmlspecialchars($_POST['comment']);
+                    $name = htmlspecialchars($_POST['name']);
+                    if(strpos($comment,'редиска')!==false || strpos($name,'редиска')!==false){
+                       echo "<span style='color:red;'>* редиска не может быть записана в базу данных</span>";
                     }else {
-                        $connexion->query("INSERT INTO comments (`name`,`comment`,`date`)VALUES ('$name','$comment', now())");
+                        $safe=$connexion->prepare("INSERT INTO `comments` SET name=:name, comment=:comment, date= now()");
+                        $arr=['name'=>$name, 'comment'=>$comment];
+                        $safe->execute($arr);
                         $n = 0;
                     }
                 }
-                $avis = $connexion->query('SELECT*FROM `comments`');
+                $avis = $connexion->query("SELECT*FROM `comments` WHERE moderate='ok' ORDER by date DESC");
                     ?>
             </form>
             <hr>
